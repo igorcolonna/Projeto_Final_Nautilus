@@ -20,7 +20,7 @@ class CameraHandler:
         try:
             self.img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
 
-        except CvBridgeError, e:
+        except CvBridgeError as e:
             print("Frame Dropped: ", e)
 
 

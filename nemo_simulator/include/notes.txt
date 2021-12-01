@@ -1,0 +1,8 @@
+linear Y movimento/velocidade (Y > frente; -Y > tras)
+angular Z rotação (Z > esquerda; -Z direita)
+
+comandos uteis
+
+python3 range-detector.py --image sample2.png --filter HSV --preview   (testar o filtro de cor)
+
+rosrun rqt_image_view rqt_image_view                                   (roda oq a camera esta vendo com ou sem os filtros)

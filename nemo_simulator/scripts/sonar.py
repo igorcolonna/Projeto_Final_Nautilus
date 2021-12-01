@@ -25,7 +25,7 @@ class FishTracker():
 nemo = FishTracker("nemo")
 marlin = FishTracker("marlin")
 rate = rospy.Rate(rospy.get_param("rate"))
-pub = rospy.Publisher("sonar_data", PointStamped)
+pub = rospy.Publisher("sonar_data", PointStamped,queue_size=1)
 
 def genMsg(delta):
     error = rospy.get_param("noise-mag")
