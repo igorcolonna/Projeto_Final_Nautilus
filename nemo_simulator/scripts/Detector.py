@@ -12,8 +12,9 @@ import time
 from std_msgs.msg           import String
 from sensor_msgs.msg        import Image
 from geometry_msgs.msg      import Point
-from cv_bridge              import CvBridge, CvBridgeError
-from include.img_cleaning   import *
+from cv_bridge              import CvBridge
+import numpy as np
+#from img_cleaning           import *
 
 
 class Detector:
@@ -22,56 +23,44 @@ class Detector:
         self.set_hsv = (hsv_min, hsv_max)
         self.nemo_point = Point()
 
-        self.image_pub = rospy.Publisher("/marlin/image_nemo",Image,queue_size=3)
-        self.mask_pub = rospy.Publisher("/marlin/image_nemo_mask",Image,queue_size=3)
+        self.image_pub = rospy.Publisher("/marlin/image_nemo",Image,queue_size=1)
+        self.mask_pub = rospy.Publisher("/marlin/image_nemo_mask",Image,queue_size=1)
 
-        self.marlin_pub  = rospy.Publisher("/marlin/nemo_point",Point,queue_size=3)
+        self.marlin_pub  = rospy.Publisher("/marlin/nemo_point",Point,queue_size=10)
 
-        self.bridge = CvBridge()
+        self.sub = rospy.Subscriber("camera/image_raw", Image, self.callback)
+        self.pub=rospy.Publisher("my_image",Image,queue_size=10)
 
-        self.image_sub = rospy.Subscriber("camera/image_raw",Image,self.callback)
+    def callback(self, msg):
 
-    def callback(self, data):
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        bridge = CvBridge()
+        cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
+        self.pub.publish(bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+        self.mask_pub.publish(bridge.cv2_to_imgmsg(self.filtro(cv_image), "8UC1"))
+        #self.position(self.filtro(cv_image), cv_image)
+        #self.image_pub.publish(bridge.cv2_to_imgmsg(self.position(self.filtro(cv_image),cv_image), "8UC1"))
 
-        except CvBridgeError as e:
-            print("Frame Dropped: ", e)
 
-        (rows,cols,channels) = cv_image.shape
-        if cols > 60 and rows > 60 :
-            keypoints, mask   = cleaning(cv_image, self.set_hsv[0], self.set_hsv[1])
+    def filtro(self, img):
 
-            try:
-                self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
-                self.mask_pub.publish(self.bridge.cv2_to_imgmsg(mask, "8UC1"))
-            except CvBridgeError as e:
-                print(e)
-            
-            for i, keyPoint in enumerate(keypoints):
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv,self.set_hsv[0], self.set_hsv[1])
 
-                x = keyPoint.pt[0]
-                y = keyPoint.pt[1]
-                s = keyPoint.size
-                #print ("kp %d: s = %3d   x = %3d  y= %3d"%(i, s, x, y))
-                
-                x, y = get_nemo_relative_position(cv_image, keyPoint)
-                
-                self.nemo_point.x = x
-                self.nemo_point.y = y
-                self.marlin_pub.publish(self.nemo_point) 
-                break
+        return mask
+    
 
-def main(args):
+if __name__ == '__main__':
     hsv_min = (31, 150, 100)
     hsv_max = (71, 255, 255)
 
-    ic = Detector(hsv_min, hsv_max)
     rospy.init_node('nemo_detector', anonymous=True)
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        print("Shutting down")
 
-if __name__ == '__main__':
-    main(sys.argv)
+    ic = Detector(hsv_min, hsv_max)
+    
+    rospy.spin()
+    #try:
+    
+    #except KeyboardInterrupt:
+    #   print("Shutting down")
+
+    #main(sys.argv)

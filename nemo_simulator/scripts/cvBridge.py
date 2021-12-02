@@ -6,7 +6,7 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-rospy.init_node("cv_bridge", anonymous=True)
+#rospy.init_node("cv_bridge", anonymous=True)
 
 class CameraHandler:
     def __init__(self):
@@ -33,7 +33,7 @@ class CameraHandler:
 
 
 
-handler = CameraHandler()
+#handler = CameraHandler()
 
 #EXAMPLE
 # while not rospy.is_shutdown():
