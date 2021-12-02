@@ -7,7 +7,7 @@
     <!--<node name='cv_bridge' pkg="nemo_simulator" type='cvBridge.py'/>-->
 
     <node name='nemo_detector' pkg="nemo_simulator" type='Detector.py'/>
-
+    <node name='Follower' pkg="nemo_simulator" type='follow.py'/>
     
 
 </launch>

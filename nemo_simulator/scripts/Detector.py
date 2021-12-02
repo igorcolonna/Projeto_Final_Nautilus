@@ -43,7 +43,7 @@ class Detector:
         self.nemo_point.x = position[1][0]
         self.nemo_point.y = position[1][1]
         self.marlin_pub.publish(self.nemo_point)
-
+        
 
     def filtro(self, img):
 
@@ -71,6 +71,7 @@ class Detector:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
             
             print(f"x: {cx} y: {cy}")
+        
         coord = [cx, cy]
 
         return reversemask, coord
