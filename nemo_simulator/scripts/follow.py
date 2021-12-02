@@ -5,13 +5,6 @@ import rospy
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Point
 
-K_LAT_DIST_TO_STEER     = 2.0
-
-def saturate(value, min, max):
-    if value <= min: return(min)
-    elif value >= max: return(max)
-    else: return(value)
-
 class Follower:
     def __init__(self):
         self.nemo_x = 0.0
@@ -39,9 +32,9 @@ class Follower:
         if (self.nemo_x == 0.0):
             steer_action = 0.0
         elif (self.nemo_x > 637.0):
-            steer_action = -1.5
+            steer_action = -1
         elif (self.nemo_x < 637.0):
-            steer_action = 1.5
+            steer_action = 1
         else:
             steer_action = 0.0
 
@@ -76,6 +69,6 @@ if __name__ == "__main__":
 
     rospy.init_node('Follower')
     
-    chase_ball = Follower()
-    chase_ball.run()  
+    chase_nemo = Follower()
+    chase_nemo.run()  
 
