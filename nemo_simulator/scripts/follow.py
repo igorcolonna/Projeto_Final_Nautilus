@@ -11,8 +11,7 @@ class Follower:
     def __init__(self):
         self.nemo_x = 0.0
         self.nemo_y = 0.0
-        self.time_detected = 0.0
-        
+
         self.marlin_x = 0.0
         self.marlin_y = 0.0
 
@@ -53,17 +52,27 @@ class Follower:
         self.marlin_x = msg.point.x
         self.marlin_y = msg.point.y
 
-    
     def adjuster(self):
         try:
             distance = math.sqrt(self.marlin_x**2 + self.marlin_y**2)
             self.sin = self.marlin_y / distance
-            theta = math.asin(self.sin)
-            # def of rotation angle will change
-            rotation_angle = theta + math.pi / 2
+            angle = math.asin(self.sin)
+
+            if self.marlin_y > 0 : 
+                if self.marlin_x > 0:
+                    rotation_angle =  (angle + math.pi/2)
+                else:
+                    rotation_angle = -(angle + math.pi/2)
+            else: # y negativo
+                if self.marlin_x < 0: 
+                    rotation_angle = - angle
+                else:  
+                    rotation_angle = + angle
+            rotation_angle = - (angle + math.pi) if angle > 0 else  math.pi + angle
+            
             return rotation_angle
+
         except ZeroDivisionError:
-            print("deu ruim")
             return 0.0
                 
     def run(self):
