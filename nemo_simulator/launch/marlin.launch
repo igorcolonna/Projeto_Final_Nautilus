@@ -8,6 +8,7 @@
 
     <node name='nemo_detector' pkg="nemo_simulator" type='Detector.py'/>
     <node name='Follower' pkg="nemo_simulator" type='follow.py'/>
+    <node pkg='rosbag' type='play' name='rosbag_play' output='screen' args='--clock $(find nemo_simulator)/scripts/nemo_vel_1.bag'/>
     
 
 </launch>

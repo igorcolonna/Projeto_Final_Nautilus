@@ -17,21 +17,17 @@ class Follower:
         self.marlin_y = 0.0
 
         self.sub = rospy.Subscriber("/marlin/nemo_point", Point, self.update_pos)
-        self.sub2 = rospy.Subscriber("/sonar_data", PointStamped, self.update_sonar)
+        self.sub2 = rospy.Subscriber("sonar_data", PointStamped, self.update_sonar)
 
         self.pub_twist = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
 
         self.msg = Twist()
 
-    @property
-    def is_detected(self):
-        return(time.time() - self.time_detected < 1.0)
-
     def update_pos(self, pos):
         self.nemo_x = pos.x
         self.nemo_y = pos.y
-        self.time_detected = time.time()
-
+        self.time_detected = time.time() 
+    
     def controller(self):
         steer_action = 0.0
         throttle_action = 0.0
@@ -52,20 +48,23 @@ class Follower:
             throttle_action = 0.0
         
         return(steer_action, throttle_action)
-    
+
     def update_sonar(self, msg):
         self.marlin_x = msg.point.x
         self.marlin_y = msg.point.y
+
     
     def adjuster(self):
-
-        distance = math.sqrt(self.marlin_x*self.marlin_x + self.marlin_y*self.marlin_y)
-        self.sin = self.marlin_y / distance
-        theta = math.asin(self.sin)
-        # def of rotation angle will change
-        rotation_angle = theta + math.pi / 2 
-        
-        return rotation_angle
+        try:
+            distance = math.sqrt(self.marlin_x**2 + self.marlin_y**2)
+            self.sin = self.marlin_y / distance
+            theta = math.asin(self.sin)
+            # def of rotation angle will change
+            rotation_angle = theta + math.pi / 2
+            return rotation_angle
+        except ZeroDivisionError:
+            print("deu ruim")
+            return 0.0
                 
     def run(self):
         
@@ -74,15 +73,14 @@ class Follower:
         while not rospy.is_shutdown():
             
             steer_action, throttle_action = self.controller() 
-            # print(steer_action, throttle_action)
-            
+          
             self.msg.linear.y  = throttle_action
             self.msg.angular.z = steer_action
-            
-            # print(steer_action, throttle_action)
+
             self.pub_twist.publish(self.msg)
 
             rate.sleep()  
+
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ class Detector:
         cv_image = bridge.imgmsg_to_cv2(msg, "bgr8")
         self.pub.publish(bridge.cv2_to_imgmsg(cv_image, "bgr8"))
         self.mask_pub.publish(bridge.cv2_to_imgmsg(self.filtro(cv_image), "8UC1"))
-        #self.image_pub.publish(self.position(self.filtro(cv_image)), "bgr8")
+
         position = self.position(self.filtro(cv_image))
         self.image_pub.publish(bridge.cv2_to_imgmsg(position[0], "8UC1"))
         self.nemo_point.x = position[1][0]
@@ -88,9 +88,3 @@ if __name__ == '__main__':
     ic = Detector(hsv_min, hsv_max)
     
     rospy.spin()
-    #try:
-    
-    #except KeyboardInterrupt:
-    #   print("Shutting down")
-
-    #main(sys.argv)
