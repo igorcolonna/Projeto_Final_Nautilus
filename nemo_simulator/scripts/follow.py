@@ -34,16 +34,16 @@ class Follower:
         if (self.nemo_x == 0.0):
             steer_action = self.adjuster()
         elif (self.nemo_x > 637.0):
-            steer_action = -1
+            steer_action = -1.5
         elif (self.nemo_x < 637.0):
-            steer_action = 1
+            steer_action = 1.5
         else:
             steer_action = 0.0
 
         if (self.nemo_y == 0.0):
             throttle_action = 0.0
         elif (self.nemo_y > 227.0):
-            throttle_action = 2.0
+            throttle_action = 3.0
         else:
             throttle_action = 0.0
         
@@ -67,7 +67,7 @@ class Follower:
             return 0.0
                 
     def run(self):
-        
+
         rate = rospy.Rate(5)
 
         while not rospy.is_shutdown():
@@ -84,7 +84,7 @@ class Follower:
 
 
 if __name__ == "__main__":
-
+    time.sleep(1)
     rospy.init_node('Follower')
     
     chase_nemo = Follower()
