@@ -119,7 +119,7 @@
         </include>
         <include>
           <name>marlin</name>
-          <pose>5 7 0.23 0 0 0</pose>
+          <pose>5 9 0.23 0 0 0</pose>
           <uri>model://marlin</uri>
         </include>
         <include>
